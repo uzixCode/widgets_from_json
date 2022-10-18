@@ -7,6 +7,8 @@ class WidgetsController extends Cubit<int> {
   WidgetsController() : super(0);
   void refresher() => emit(state + 1);
   Map<String, Map<String, dynamic>> result = {};
+  Widget Function(BuildContext context, String key, String type,
+      Map<String, Map<String, dynamic>> state)? costumComponent;
   void changeValue(
       {required String key, required String valueKey, required dynamic value}) {
     result[key]![valueKey] = value;
@@ -20,50 +22,19 @@ class WidgetsController extends Cubit<int> {
   }
 
   void _initData(Map<String, dynamic> element) {
-    switch (element["type"]) {
-      case "TextField":
-        result[element["key"]] = {};
-        element.forEach((key, value) {
-          result[element["key"]]?[key] = value;
-        });
-        result[element["key"]]?["value"] = TextEditingController();
-        result[element["key"]]?["state"] = Component();
-        result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
-        break;
-      case "Column":
-        result[element["key"]] = {};
-        element.forEach((key, value) {
-          result[element["key"]]?[key] = value;
-        });
-        result[element["key"]]?["state"] = Component();
-        result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
-        if (element["children"] != null) {
-          element["children"]?.forEach((element) {
-            _initData(element);
-          });
-        }
-        break;
-      case "Row":
-        result[element["key"]] = {};
-        element.forEach((key, value) {
-          result[element["key"]]?[key] = value;
-        });
-        result[element["key"]]?["state"] = Component();
-        result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
-        if (element["children"] != null) {
-          element["children"]?.forEach((element) {
-            _initData(element);
-          });
-        }
-        break;
-      default:
-        result[element["key"]] = {};
-        element.forEach((key, value) {
-          result[element["key"]]?[key] = value;
-        });
-        result[element["key"]]?["state"] = Component();
-        result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
-        break;
+    result[element["key"]] = {};
+    element.forEach((key, value) {
+      result[element["key"]]?[key] = value;
+    });
+    result[element["key"]]?["state"] = Component();
+    result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
+    if (element["child"] != null) {
+      _initData(element["child"]);
+    }
+    if (element["children"] != null) {
+      element["children"]?.forEach((element) {
+        _initData(element);
+      });
     }
   }
 
@@ -109,6 +80,15 @@ class WidgetsController extends Cubit<int> {
     return result[key]?[valueKey];
   }
 
+  Widget getComponent(Map<String, dynamic> e) => BlocProvider.value(
+        value: result[e["key"]]?["state"] as Component,
+        child: Builder(builder: (context) {
+          context.watch<Component>();
+          return costumComponent != null
+              ? costumComponent!(context, e["key"], e["type"], result)
+              : const SizedBox();
+        }),
+      );
   @override
   Future<void> close() {
     return super.close();

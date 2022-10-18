@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'cubit/component.dart';
+import 'package:uuid/uuid.dart';
 import 'cubit/form_controller.dart';
 export 'cubit/form_controller.dart';
 export 'cubit/component.dart';
@@ -30,38 +31,49 @@ class WidgetsFromJson extends StatefulWidget {
 
 class _WidgetsFromJsonState extends State<WidgetsFromJson> {
   List<Map<String, dynamic>>? list = [];
+  Map<String, List<Map<String, dynamic>>> _source = {};
   @override
   void initState() {
-    widget.controller.initialize(widget.source);
+    _source = Map.of(widget.source);
+    if (_source["field"] != null) {
+      _source["field"] = _source["field"]!.map((e) => intercept(e)).toList();
+    }
+    log(_source.toString());
+    widget.controller.initialize(_source);
+    widget.controller.costumComponent = widget.costumComponent;
     super.initState();
+  }
+
+  Map<String, dynamic> intercept(Map<String, dynamic> element) {
+    Map<String, dynamic> temp = Map.of(element);
+    String widgetsKey = const Uuid().v4();
+    if (temp["key"] == null) {
+      temp["key"] = widgetsKey;
+    }
+    if (temp["child"] != null) {
+      temp["child"] = intercept(temp["child"]);
+    }
+    if (temp["children"] != null) {
+      temp["children"] = temp["children"]!.map((e) => intercept(e)).toList();
+    }
+    return temp;
   }
 
   @override
   Widget build(BuildContext context) {
     if (widget.fieldType == WidgetType.column) {
       return Column(
-        children: widget.source["field"]
-                ?.map<Widget>((e) => getComponent(e))
+        children: _source["field"]
+                ?.map<Widget>((e) => widget.controller.getComponent(e))
                 .toList() ??
             [],
       );
     }
     return ListView(
-      children: widget.source["field"]
-              ?.map<Widget>((e) => getComponent(e))
+      children: _source["field"]
+              ?.map<Widget>((e) => widget.controller.getComponent(e))
               .toList() ??
           [],
     );
   }
-
-  Widget getComponent(Map<String, dynamic> e) => BlocProvider.value(
-        value: widget.controller.result[e["key"]]?["state"] as Component,
-        child: Builder(builder: (context) {
-          context.watch<Component>();
-          return widget.costumComponent != null
-              ? widget.costumComponent!(
-                  context, e["key"], e["type"], widget.controller.result)
-              : const SizedBox();
-        }),
-      );
 }
