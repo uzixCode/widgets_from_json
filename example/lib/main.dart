@@ -235,7 +235,7 @@ class _MyAppState extends State<MyApp> {
         fieldType: WidgetType.row,
         mainAxisAlignment: "between",
         source: source,
-        defaultComponent: (context, key, type, state) {
+        defaultComponent: (context, key, type, state, source) {
           switch (type) {
             case "Text":
               return Text(state[key]?["default"] != null
@@ -303,7 +303,6 @@ class _MyAppState extends State<MyApp> {
                     : widgetsController.getComponent(state[key]?["child"]),
               );
             case "SizedBox":
-              log(sizeDicider(context, state[key]?["width"]).toString());
               return SizedBox(
                 width: sizeDicider(context, state[key]?["width"]),
                 height: sizeDicider(context, state[key]?["height"]),
@@ -315,7 +314,7 @@ class _MyAppState extends State<MyApp> {
               return const SizedBox();
           }
         },
-        costumComponent: (context, key, type, state) {
+        costumComponent: (context, key, type, state, source) {
           switch (type) {
             case "Padding":
               return Padding(

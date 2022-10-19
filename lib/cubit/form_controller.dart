@@ -10,10 +10,18 @@ class WidgetsController extends Cubit<int> {
   WidgetsController() : super(0);
   void refresher() => emit(state + 1);
   Map<String, Map<String, dynamic>> result = {};
-  Widget? Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? costumComponent;
-  Widget Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? defaultComponent;
+  Widget? Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? costumComponent;
+  Widget Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? defaultComponent;
   Function(String key, String type, Map<String, dynamic> state)? onWarning;
   Map<String, dynamic> source = {};
   void changeValue(
@@ -170,13 +178,13 @@ class WidgetsController extends Cubit<int> {
         child: Builder(builder: (context) {
           context.watch<Component>();
           if (costumComponent != null) {
-            return costumComponent!(context, e["key"], e["type"], result) ??
+            return costumComponent!(context, e["key"], e["type"], result, e) ??
                 (defaultComponent != null
-                    ? defaultComponent!(context, e["key"], e["type"], result)
+                    ? defaultComponent!(context, e["key"], e["type"], result, e)
                     : const SizedBox());
           }
           return defaultComponent != null
-              ? defaultComponent!(context, e["key"], e["type"], result)
+              ? defaultComponent!(context, e["key"], e["type"], result, e)
               : const SizedBox();
         }),
       );

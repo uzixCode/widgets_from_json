@@ -22,12 +22,20 @@ class WidgetsFromJson extends StatelessWidget {
   WidgetsController controller;
   Map<String, dynamic> source;
   Widget Function(String key, Map<String, Map<String, dynamic>> state)? radio;
-  Widget Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? defaultComponent;
+  Widget Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? defaultComponent;
 
   /// [costumComponent] will override default [defaultComponent] if it has same type
-  Widget? Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? costumComponent;
+  Widget? Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? costumComponent;
   Function(String key, String type, Map<String, dynamic> state)? onWarning;
   void Function(Map<String, Map<String, dynamic>> result)? resultBuilder;
   WidgetType? fieldType;
@@ -67,12 +75,20 @@ class _Main extends StatefulWidget {
   WidgetsController controller;
   Map<String, dynamic> source;
   Widget Function(String key, Map<String, Map<String, dynamic>> state)? radio;
-  Widget Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? defaultComponent;
+  Widget Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? defaultComponent;
 
   /// [costumComponent] will override default [defaultComponent] if it has same type
-  Widget? Function(BuildContext context, String key, String type,
-      Map<String, Map<String, dynamic>> state)? costumComponent;
+  Widget? Function(
+      BuildContext context,
+      String key,
+      String type,
+      Map<String, Map<String, dynamic>> state,
+      Map<String, dynamic> source)? costumComponent;
   Function(String key, String type, Map<String, dynamic> state)? onWarning;
   void Function(Map<String, Map<String, dynamic>> result)? resultBuilder;
   WidgetType? fieldType;
