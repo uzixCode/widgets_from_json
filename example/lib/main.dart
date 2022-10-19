@@ -32,7 +32,11 @@ final view1 = {
                     "color": 0xffFF731D,
                     "child": {
                       "type": "Padding",
-                      "child": {"type": "Text", "value": "Container"}
+                      "child": {
+                        "key": "Container1",
+                        "type": "Text",
+                        "value": "Container"
+                      }
                     }
                   }
                 }
@@ -54,7 +58,11 @@ final view1 = {
                     "color": 0xffFF731D,
                     "child": {
                       "type": "Padding",
-                      "child": {"type": "Text", "value": "Container"}
+                      "child": {
+                        "key": "Container2",
+                        "type": "Text",
+                        "value": "Container"
+                      }
                     }
                   }
                 }
@@ -83,7 +91,11 @@ final view1 = {
                     "color": 0xffFF731D,
                     "child": {
                       "type": "Padding",
-                      "child": {"type": "Text", "value": "Container"}
+                      "child": {
+                        "key": "Container3",
+                        "type": "Text",
+                        "value": "Container"
+                      }
                     }
                   }
                 }
@@ -105,7 +117,11 @@ final view1 = {
                     "color": 0xffFF731D,
                     "child": {
                       "type": "Padding",
-                      "child": {"type": "Text", "value": "Container"}
+                      "child": {
+                        "key": "Container4",
+                        "type": "Text",
+                        "value": "Container"
+                      }
                     }
                   }
                 }
@@ -162,6 +178,20 @@ final view3 = {
     }
   }
 };
+final view4 = {
+  "field": {
+    "type": "Column",
+    "alignment": "center",
+    "children": [
+      {
+        "key": "username",
+        "type": "TextField",
+        "default": "TextField",
+        "output": true
+      }
+    ]
+  }
+};
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -181,15 +211,23 @@ class _MyAppState extends State<MyApp> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          log(widgetsController.getResult(context).toString());
-          if (source == view1) {
-            source = view2;
-          } else if (source == view2) {
-            source = view3;
-          } else {
-            source = view1;
-          }
-          widgetsController.initialize(source);
+          final importData = {
+            "title": "Imported",
+            "Container1": "Imported",
+            "Container2": "Imported",
+            "Container3": "Imported",
+            "Container4": "Imported"
+          };
+          // log(widgetsController.getResult(context).toString());
+          widgetsController.importData(importData);
+          // if (source == view1) {
+          //   source = view2;
+          // } else if (source == view2) {
+          //   source = view3;
+          // } else {
+          //   source = view1;
+          // }
+          // widgetsController.initialize(source);
         },
       ),
       body: WidgetsFromJson(
@@ -200,7 +238,16 @@ class _MyAppState extends State<MyApp> {
         defaultComponent: (context, key, type, state) {
           switch (type) {
             case "Text":
-              return Text(state[key]?["value"] ?? "-");
+              return Text(state[key]?["default"] != null
+                  ? state[key]!["default"]
+                  : (state[key]?["value"] ?? "-"));
+            case "TextField":
+              return TextField(
+                controller: widgetsController.setIfNull<TextEditingController>(
+                    key: key,
+                    valueKey: "value",
+                    value: TextEditingController(text: state[key]?["default"])),
+              );
             case "HSpace":
               return SizedBox(
                 height: (state[key]?["value"] ?? 0) * 1.0,

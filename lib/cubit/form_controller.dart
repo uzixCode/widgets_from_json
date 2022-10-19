@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uuid/uuid.dart';
@@ -20,6 +22,40 @@ class WidgetsController extends Cubit<int> {
       result[key]![valueKey] = value;
       (result[key]!["state"] as Component).refresher();
     }
+  }
+
+  Map<String, dynamic> insertData(
+    Map<String, dynamic> s,
+    Map<String, dynamic> import,
+  ) {
+    Map<String, dynamic> temp = Map.of(s);
+    import.forEach((key, value) {
+      if (key == temp["key"]) {
+        temp["default"] = value;
+      }
+    });
+
+    if (temp["child"] != null) {
+      temp["child"] = insertData(temp["child"], import);
+    }
+    if (temp["children"] != null) {
+      temp["children"] =
+          temp["children"]!.map((e) => insertData(e, import)).toList();
+    }
+    return temp;
+  }
+
+  void importData(Map<String, dynamic> import) {
+    if (source["field"] != null) {
+      if (source["field"] is List) {
+        source["field"] =
+            source["field"]!.map((e) => insertData(e, import)).toList();
+      } else {
+        source["field"] = insertData(source["field"], import);
+      }
+    }
+    initialize(source);
+    log(source.toString());
   }
 
   void intercepting(Map<String, dynamic> s) {
@@ -49,7 +85,9 @@ class WidgetsController extends Cubit<int> {
   void _initData(Map<String, dynamic> element) {
     result[element["key"]] = {};
     element.forEach((key, value) {
+      // if (key != "child" && key != "children") {
       result[element["key"]]?[key] = value;
+      // }
     });
     result[element["key"]]?["state"] = Component();
     result[element["key"]]?["isNullable"] = element["isNullable"] ?? true;
