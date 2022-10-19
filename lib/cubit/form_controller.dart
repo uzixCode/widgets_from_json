@@ -26,8 +26,8 @@ class WidgetsController extends Cubit<int> {
   Map<String, dynamic> source = {};
   void changeValue(
       {required String key, required String valueKey, required dynamic value}) {
-    result[key]![valueKey] = value;
-    (result[key]!["state"] as Component).refresher();
+    result[key]?[valueKey] = value;
+    (result[key]?["state"] as Component).refresher();
   }
 
   Map<String, dynamic> insertData(
